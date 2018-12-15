@@ -28,6 +28,9 @@ BLL
 	Statistics
 		//class ms2ol 3la les operation dyal l7isabat
 	Printer
+	BareCodeGenerator
+		
+		
 		
 	Loggs
 		

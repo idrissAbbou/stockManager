@@ -1,0 +1,7 @@
+C:\Users\xana\Desktop\Stock Manager\Stock Manager\BLL\obj\Debug\BLL.csprojResolveAssemblyReference.cache
+C:\Users\xana\Desktop\Stock Manager\Stock Manager\BLL\obj\Debug\BLL.Properties.Resources.resources
+C:\Users\xana\Desktop\Stock Manager\Stock Manager\BLL\obj\Debug\BLL.csproj.GenerateResource.Cache
+C:\Users\xana\Desktop\Stock Manager\Stock Manager\BLL\bin\Debug\BLL.dll
+C:\Users\xana\Desktop\Stock Manager\Stock Manager\BLL\bin\Debug\BLL.pdb
+C:\Users\xana\Desktop\Stock Manager\Stock Manager\BLL\obj\Debug\BLL.dll
+C:\Users\xana\Desktop\Stock Manager\Stock Manager\BLL\obj\Debug\BLL.pdb
