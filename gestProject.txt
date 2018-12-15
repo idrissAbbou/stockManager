@@ -1,0 +1,45 @@
+------------------------------
+database : 
+product ( -barecode varchar, name, price, description, image, qteEnStock);
+commandlineBuy ( -idCommnadLine ,#barecode, #idBuy, qteCommande );
+commandlineSell ( -idCommnadLine ,#barecode,#idSells, qteCommande );
+sells ( -idSells, #idCommandLine, date);
+Buys( -idAchat, #idCommandLine, date);
+loggs( -idLog, description);
+------------------------------
+DBL
+Dataset of type myDataBase
+------------------------------
+BLL
+	Product 
+		barecode, name , price, description, image;
+		string tostring();
+	
+	CommandLine
+		_Product, qte;
+		
+	Sells
+		list CommnadLine
+		date
+	Buys
+		list commandLine
+		date
+	
+	Statistics
+		//class ms2ol 3la les operation dyal l7isabat
+	Printer
+		
+	Loggs
+		
+	ManageCommandLineSell
+		insert,update,delete
+	ManageCommandLineBuy
+		insert,update,delete
+	ManageProducts 
+		methods: int insert(Prodcut); int delete(Product); int update(Product);
+	ManageBuys
+		insert,delete,update
+	ManageSells
+		insert,delete,update
+------------------------------
+GUI
