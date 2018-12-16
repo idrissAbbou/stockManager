@@ -1,8 +1,11 @@
-/* ba9i lia dak ston dial sells w buys mea commandline dialhom ghadi ntghda wngls nfakar f solution w lasatio ankhli file f git*/
+/* driss READ this*/
+/* hada hwa solution li bant lia rah gadit kolchi dakchi li dwina alih ms b logique diali bant lik chi haja khsha dar bchi tari9a 7san khali lia logique w ghn3awd n3adal 3la lcode */
+
+
 /*
 product (-barecode varchar,name,price,escription,image,qteEnStock);
-commandlineBuy(-#idSells,-#barecode,qteCommande);
-commandlineSell(-#idAchat,-#barecode,qteCommande);
+commandlineBuy(#idSells,#barecode,qteCommande);
+commandlineSell(#idAchat,#barecode,qteCommande);
 sells(-idSells,date);
 Buys(-idAchat,date);
 loggs(-idLog,description);
@@ -19,12 +22,12 @@ create table product (
 	)
 
 create table sells (
-	idSells int identity primary key,
+	idSells int  primary key,
 	dateSells datetime
 	)
 
 create table Buys (
-	idBuys int identity primary key,
+	idBuys int  primary key,
 	dateBuys datetime
 	)
 
@@ -79,6 +82,15 @@ begin
 	select @qte = p.qteEnStockProduct from product p where p.barecode = @barecode
 	set @qte=@qte+@qteCommande
 	update product set product.qteEnStockProduct = @qte
+
+	/*create a buy*/
+	declare @n int
+	select @n=count(*) from Buys where Buys.idBuys=@idBuys
+
+	if  (@n = 0)
+	begin
+		insert into Buys values(@idBuys,GETDATE())
+	end
 end
 
 
@@ -121,6 +133,16 @@ begin
 	begin
 		update product set product.qteEnStockProduct = @qte
 	end
+
+	/*create a buy*/
+	declare @n int
+	select @n=count(*) from sells where sells.idSells =@idSells
+
+	if  (@n = 0)
+	begin
+		insert into sells values(@idSells,GETDATE())
+	end
+
 end
 
 go
@@ -228,11 +250,24 @@ begin
 				+cast(@qteCommande as varchar(20))+'idBuys'+cast(@idBuys as varchar(20))
 				+'dateBuys: '+cast(@dateBuys as varchar(20))
 	insert into loggs(descriptionLog) values (@string)
+
+
 	/*update stock */
 	declare @qte int
 	select @qte = p.qteEnStockProduct from product p where p.barecode = @barecode
 	set @qte=@qte-@qteCommande
 	update product set product.qteEnStockProduct = @qte
+
+
+
+	/*delete a buy if it have just this one commandline*/
+	declare @n int
+	select @n=count(*) from commandlineBuy where commandlineBuy.idBuys=@idBuys
+
+	if(@n=0)
+	begin
+		delete from Buys where Buys.idBuys=@idBuys
+	end
 end
 go
 
@@ -266,4 +301,14 @@ begin
 	set @qte=@qte+@qteCommande
 	update product set product.qteEnStockProduct = @qte
 
+
+	/*delete a buy if it have just this one commandline*/
+	declare @n int
+	select @n=count(*) from commandlineSell where commandlineSell.idSells=@idSells
+
+	if(@n=0)
+	begin
+		delete from sells where sells.idSells=@idSells
+	end
 end
+go
