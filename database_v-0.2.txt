@@ -1,10 +1,10 @@
 /* ba9i lia dak ston dial sells w buys mea commandline dialhom ghadi ntghda wngls nfakar f solution w lasatio ankhli file f git*/
 /*
 product (-barecode varchar,name,price,escription,image,qteEnStock);
-commandlineBuy(#idSells,#barecode,qteCommande);
-commandlineSell(#idAchat,#barecode,qteCommande);
-sells(-idSells,#idCommandLine,date);
-Buys(-idAchat,#idCommandLine,date);
+commandlineBuy(-#idSells,-#barecode,qteCommande);
+commandlineSell(-#idAchat,-#barecode,qteCommande);
+sells(-idSells,date);
+Buys(-idAchat,date);
 loggs(-idLog,description);
 */
 
