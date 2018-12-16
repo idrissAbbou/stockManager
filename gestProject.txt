@@ -3,8 +3,8 @@ database :
 product ( -barecode varchar, name, price, description, image, qteEnStock);
 commandlineBuy ( -idCommnadLine ,#barecode, #idBuy, qteCommande );
 commandlineSell ( -idCommnadLine ,#barecode,#idSells, qteCommande );
-sells ( -idSells, #idCommandLine, date);
-Buys( -idAchat, #idCommandLine, date);
+sells ( -idSells date);
+Buys( -idAchat, date);
 loggs( -idLog, description);
 ------------------------------
 DBL
