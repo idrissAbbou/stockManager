@@ -1,0 +1,269 @@
+/* ba9i lia dak ston dial sells w buys mea commandline dialhom ghadi ntghda wngls nfakar f solution w lasatio ankhli file f git*/
+/*
+product (-barecode varchar,name,price,escription,image,qteEnStock);
+commandlineBuy(#idSells,#barecode,qteCommande);
+commandlineSell(#idAchat,#barecode,qteCommande);
+sells(-idSells,#idCommandLine,date);
+Buys(-idAchat,#idCommandLine,date);
+loggs(-idLog,description);
+*/
+
+
+create table product (
+	barecode varchar(50) primary key,
+	nameProduct varchar(20), 
+	priceProduct float, 
+	descriptionProduct varchar(50), 
+	imageProduct varbinary(max), 
+	qteEnStockProduct float
+	)
+
+create table sells (
+	idSells int identity primary key,
+	dateSells datetime
+	)
+
+create table Buys (
+	idBuys int identity primary key,
+	dateBuys datetime
+	)
+
+create table commandlineBuy (
+	barecode varchar(50) foreign key references product(barecode), 
+	idBuys int foreign key references Buys(idBuys),
+	qteCommande int, 
+	dateBuys datetime,
+	constraint primarykey primary key (barecode,idBuys)
+	)
+
+create table commandlineSell (
+	barecode varchar(50) foreign key references product(barecode), 
+	idSells int foreign key references sells(idSells),
+	qteCommande int, 
+	dateSells datetime,
+	constraint primarykey primary key (barecode,idSells)
+	)
+
+
+create table loggs (
+	 idLog int identity primary key,
+	 descriptionLog varchar(100)
+	)
+
+go
+
+create trigger triggerForInsertInCommandLineBuy
+on commandlineBuy
+for insert
+as
+begin
+	/*insert into loggs*/
+	declare @barecode varchar(50)
+	declare @qteCommande int
+	declare @idBuys int
+	declare @dateBuys datetime
+
+	select @barecode = barecode ,
+		   @qteCommande = qteCommande,
+		   @idBuys = idBuys ,	
+	       @dateBuys = dateBuys
+	from inserted	
+
+	declare @string varchar(100)
+	set @string ='(INSERT)' +'barecode : '+cast(@barecode as varchar(20))+'qteCommande: '
+				+cast(@qteCommande as varchar(20))+'idBuys'+cast(@idBuys as varchar(20))
+				+'dateBuys: '+cast(@dateBuys as varchar(20))
+	insert into loggs(descriptionLog) values (@string)
+	/*update stock */
+	declare @qte int
+	select @qte = p.qteEnStockProduct from product p where p.barecode = @barecode
+	set @qte=@qte+@qteCommande
+	update product set product.qteEnStockProduct = @qte
+end
+
+
+go
+
+create trigger triggerForInsertInCommandlineSell
+on commandlineSell
+for insert
+as
+begin
+	/*insert into loggs*/
+	declare @barecode varchar(50)
+	declare @qteCommande int
+	declare @idSells int
+	declare @dateSells datetime
+
+	select @barecode = barecode, 	
+	   	   @qteCommande = qteCommande,
+	 	   @idSells = idSells,
+		   @dateSells = dateSells
+	from inserted	
+
+	declare @string varchar(100)
+	set @string ='(INSERT)'+'barecode : '+cast(@barecode as varchar(20))+'qteCommande: '
+	            +cast(@qteCommande as varchar(20))+'idAchat'+cast(@idSells as varchar(20))
+				+'dateSells: '+cast(@dateSells as varchar(20))
+
+	insert into loggs(descriptionLog) values (@string)
+
+	/*update stock */
+	declare @qte int
+	select @qte = p.qteEnStockProduct from product p where p.barecode = @barecode
+	set @qte=@qte-@qteCommande
+	if @qte<0
+	begin
+		RAISERROR ('RESSOURCES NEEDED!!', 16, 1)
+		ROLLBACK
+	end
+	else
+	begin
+		update product set product.qteEnStockProduct = @qte
+	end
+end
+
+go
+
+create trigger triggerForUpdateCommandlineBuy
+on commandlineBuy
+for update
+as
+begin
+	/*insert into loggs*/
+	declare @barecode varchar(50)
+	declare @qteCommande int
+	declare @idBuys int
+	declare @dateBuys datetime
+	declare @oldQte int
+
+	select @barecode = barecode ,
+		   @qteCommande = qteCommande,
+		   @idBuys = idBuys ,	
+	       @dateBuys = dateBuys
+	from inserted	
+
+	select @oldQte=qteCommande	from deleted
+
+	declare @string varchar(100)
+
+	set @string ='(UPDATE) '+'barecode : '+cast(@barecode as varchar(20))+'@Old qte commande: '
+				+cast(@oldQte as varchar(20))+'idBuys'+cast(@idBuys as varchar(20))
+				+'dateBuys: '+cast(@dateBuys as varchar(20))+'new qte commande :'
+				+cast(@qteCommande as varchar(20))
+
+	insert into loggs(descriptionLog) values (@string)
+	/*update stock */
+	declare @qte int
+	select @qte = p.qteEnStockProduct from product p where p.barecode = @barecode
+	set @qte=@qte-@oldQte+@qteCommande
+	update product set product.qteEnStockProduct = @qte
+end
+go
+
+create trigger triggerForUpdateCommandlineSell
+on commandlineSell
+for update
+as
+begin
+/*insert into loggs*/
+	declare @barecode varchar(50)
+	declare @qteCommande int
+	declare @idSells int
+	declare @dateSells datetime
+	declare @oldQte int
+
+	select @barecode = barecode, 	
+	   	   @qteCommande = qteCommande,
+	 	   @idSells = idSells,
+		   @dateSells = dateSells
+	from inserted	
+
+	select @oldQte=qteCommande	from deleted
+
+	declare @string varchar(100)
+
+	set @string ='(update) '+'barecode : '+cast(@barecode as varchar(20))+'new qte commande: '
+	            +cast(@qteCommande as varchar(20))+'idAchat'+cast(@idSells as varchar(20))
+				+'dateSells: '+cast(@dateSells as varchar(20))+'old qte commande :'
+				+cast(@oldQte as varchar(20))
+
+	insert into loggs(descriptionLog) values (@string)
+
+	/*update stock */
+	declare @qte int
+	select @qte = p.qteEnStockProduct from product p where p.barecode = @barecode
+	set @qte=@qte+@oldQte-@qteCommande
+	if @qte<0
+	begin
+		RAISERROR ('RESSOURCES NEEDED!!', 16, 1)
+		ROLLBACK
+	end
+	else
+	begin
+		update product set product.qteEnStockProduct = @qte
+	end
+end
+go
+
+create trigger triggerForDeleteCommandLineBuy
+on commandlineBuy
+for delete
+as
+begin
+	/*insert into loggs*/
+	declare @barecode varchar(50)
+	declare @qteCommande int
+	declare @idBuys int
+	declare @dateBuys datetime
+
+	select @barecode = barecode ,
+		   @qteCommande = qteCommande,
+		   @idBuys = idBuys ,	
+	       @dateBuys = dateBuys
+	from deleted	
+
+	declare @string varchar(100)
+	set @string ='(DELETE)'+ 'barecode : '+cast(@barecode as varchar(20))+'qteCommande: '
+				+cast(@qteCommande as varchar(20))+'idBuys'+cast(@idBuys as varchar(20))
+				+'dateBuys: '+cast(@dateBuys as varchar(20))
+	insert into loggs(descriptionLog) values (@string)
+	/*update stock */
+	declare @qte int
+	select @qte = p.qteEnStockProduct from product p where p.barecode = @barecode
+	set @qte=@qte-@qteCommande
+	update product set product.qteEnStockProduct = @qte
+end
+go
+
+create trigger triggerForDeleteCommandlineSell
+on commandlineSell
+for delete
+as
+begin
+	/*insert into loggs*/
+	declare @barecode varchar(50)
+	declare @qteCommande int
+	declare @idSells int
+	declare @dateSells datetime
+
+	select @barecode = barecode, 	
+	   	   @qteCommande = qteCommande,
+	 	   @idSells = idSells,
+		   @dateSells = dateSells
+	from deleted	
+
+	declare @string varchar(100)
+	set @string ='(DELETE)''barecode : '+cast(@barecode as varchar(20))+'qteCommande: '
+	            +cast(@qteCommande as varchar(20))+'idAchat'+cast(@idSells as varchar(20))
+				+'dateSells: '+cast(@dateSells as varchar(20))
+
+	insert into loggs(descriptionLog) values (@string)
+
+	/*update stock */
+	declare @qte int
+	select @qte = p.qteEnStockProduct from product p where p.barecode = @barecode
+	set @qte=@qte+@qteCommande
+	update product set product.qteEnStockProduct = @qte
+
+end
