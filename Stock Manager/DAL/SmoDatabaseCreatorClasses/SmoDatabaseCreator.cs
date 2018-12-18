@@ -15,9 +15,21 @@ namespace DAL.SmoDatabaseCreatorClasses
         Server _server;
         Database _database;
 
-        public SmoDatabaseCreator(sqlServerTypeEnum sqlServerType)
+        public SmoDatabaseCreator()
         {
+            var sqlServerType = FindServer();
             SetServer(sqlServerType);
+        }
+
+        private sqlServerTypeEnum FindServer()
+        {
+            string[] instances = SqlFinder.ListLocalSqlInstances().ToArray();
+            if (instances.Length == 0)
+                throw new ServerNotFoundException();
+            else if (instances[0] == @".\SQLEXPRESS")
+                return sqlServerTypeEnum.sqlServerExpress;
+            else
+                return sqlServerTypeEnum.sqlServer;
         }
 
         public void SetServer(sqlServerTypeEnum sqlServerType)
