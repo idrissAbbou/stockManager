@@ -24,17 +24,31 @@ namespace DAL.AdoDatabaseCreatorClasses
         private SqlConnection _sqlConnection;
         private SqlCommand _sqlCommand;
 
-        public AdoDatabaseCreator(sqlServerTypeEnum sqlServerType)
+        public AdoDatabaseCreator()
         {
+            var sqlServerType = FindServer();
             InitializeCompenent(sqlServerType);
             Createdatabase();
         }
+
+
 
         private void InitializeCompenent(sqlServerTypeEnum sqlServerType)
         {
             SetConnectionString(sqlServerType);
             _sqlConnection = new SqlConnection(_connectionString);
             _sqlCommand = _sqlConnection.CreateCommand();
+        }
+
+        private sqlServerTypeEnum FindServer()
+        {
+            string[] instances = SqlFinder.ListLocalSqlInstances().ToArray();
+            if (instances.Length == 0)
+                throw new ServerNotFoundException();
+            else if (instances[0] == @".\SQLEXPRESS")
+                return sqlServerTypeEnum.sqlServerExpress;
+            else
+                return sqlServerTypeEnum.sqlServer;
         }
 
         public void SetConnectionString(sqlServerTypeEnum sqlServerType)
