@@ -57,7 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdoDatabaseCreatorClasses\AdoDatabaseCreator.cs" />
+    <Compile Include="ServerNotFoundException.cs" />
     <Compile Include="ServerNotSupportedException.cs" />
+    <Compile Include="SqlFinder.cs" />
     <Compile Include="sqlServerTypeEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SmoDatabaseCreatorClasses\SmoDatabaseCreator.cs" />

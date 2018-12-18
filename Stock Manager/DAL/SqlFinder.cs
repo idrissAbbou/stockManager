@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace DAL
 {
+    //sqlfinder
     public static class SqlFinder
     {
         public static IEnumerable<string> ListLocalSqlInstances()
