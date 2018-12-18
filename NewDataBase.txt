@@ -11,7 +11,7 @@ loggs(-idLog,description);
 
 create table product (
 	barecode varchar(50) primary key,
-	nameProduct varchar(20), 
+	nameProduct varchar(50), 
 	priceProduct float, 
 	descriptionProduct varchar(50), 
 	imageProduct varbinary(max), 
